@@ -12,11 +12,10 @@ firstly, required moduls need to be imported
 
 # MyAnalyst.py
 
-# importing required libraries
+## importing required libraries
 
-## Kivy required libraries
+### Kivy required libraries
 
-# Required libraries
 ```python
 import kivy
 from kivy.clock import Clock
@@ -29,14 +28,14 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
 
 ```
-## Standard libraries
+### Standard libraries
 ```python
 import time
 import os
 import sqlite3
 from datetime import datetime
 ```
-## Data analysis and visualization libraries
+### Data analysis and visualization libraries
 ```python
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -49,8 +48,375 @@ import numpy as np
 import math
 ```
 
+## loading UI
+
+The UI is written kv design language. you can load the .kv file using Builder.load_file(yourfile.kv) but in this project Builer.load_string() is prefered in order to prevent unexpected error or malfunction in the packaging stage.
+
+```python
+Builder.load_string("""<ManagerPage>:
+
+    MainPage:
+
+        name:"Main"
+
+    AllGoalsPage:
+
+        name:"AllGoals"
+
+    TheGoal:
+
+        name:"TheGoal"
+
+    VisualizationAndAnalyzePage:
+
+        name:"VisualizationAndAnalyze"
 
 
+<MainPage>
+
+    Label:
+        id: date
+        text: ''
+        font_size : 26
+        color : 0,0,0,0
+
+    Button:
+        id: go_to_my_goals_button
+        text: "My Goals"
+        size_hint : 0.25 , 0.2
+        background_color : 0.8,0,1,1
+        color: 0,1,1,1
+        pos_hint:{'center_x': 0.85 , 'center_y':0.85}
+        on_press:
+            root.go_to_my_goals()
+
+    Label :
+        id : instruction
+        text : ' Define a new goal or habit'
+        font_size : 26
+        color : 1,0,0,1
+        pos_hint : { 'center_x' : 0.4 , 'center_y' : 0.9}
+
+
+    Spinner:
+        id : common_units
+        text: "hours"
+        pos_hint:{ 'center_x' : 0.4, 'center_y' : 0.5 }
+        values : 'hours','minutes','quantity(#)',
+        size_hint : 0.74 , 0.05
+        on_text :
+            root.define_goal(self.text)
+
+
+    TextInput:
+        id: goal_title
+        multiline:False
+        hint_text: "example: studying Data Analysis "
+        size_hint : 0.74 , 0.05
+        pos_hint:{'center_x': 0.4 , 'center_y':0.7}
+
+
+    TextInput:
+        id : min_variable
+        multiline: False
+        hint_text : 'minimum desired example : 3'
+        size_hint : 0.74 , 0.05
+        pos_hint : {'center_x' : 0.4 , 'center_y':0.6}
+
+
+    TextInput:
+        id : max_variable
+        hint_text: 'maximum desired example : 7'
+        size_hint : 0.74 , 0.05
+        pos_hint : {'center_x' : 0.4 , 'center_y': 0.4}
+        multiline: False
+
+
+
+
+    TextInput:
+        id : other_variable
+        multiline : False
+        size_hint : 0.0 , 0.0
+        pos_hint : {'center_x':0, 'center_y':0}
+
+
+    Button:
+        id: define_goal
+        text: "ok"
+        pos_hint:{'center_x':0.4 , 'center_y': 0.3}
+        size_hint: 0.74 , 0.05
+        background_color: 0.8,0,1,1
+        color: 0,1,1,1
+        on_press:
+            root.define_goal()
+
+
+
+
+
+<AllGoalsPage>:
+
+    Button:
+        id: back_button
+        text: "<<<"
+        font_size: 40
+        color: 1,0,0,1
+        background_color : 0,0,0,0
+        pos_hint :{'center_x' : 0.15 , 'center_y': 0.95}
+        on_press: root.manager.current = "Main"
+
+    Label:
+        id: initial_txt
+        text: "You have not defined any habit"
+        color: 0,0,0,0
+        pos_hint:{'center_x': 0.5 , 'center_y':0.5}
+    Button:
+        id: goal1
+        text: ''
+        color: 0,1,1,1
+        size_hint: 0.42, 0.1
+        pos_hint:{'center_x': 0.25 , 'center_y':0.85}
+        background_color: 0.8,0,1,1
+        disabled: True
+        on_press: root.check_the_goal(root.ids.goal1.text)
+
+    Button:
+        id: goal2
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.1
+        on_press: root.check_the_goal(root.ids.goal2.text)
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.25 , 'center_y':0.7}
+
+    Button:
+        id: goal3
+        color: 0,0,0,0
+        text: ''
+        size_hint: 0.42, 0.1
+        on_press: root.check_the_goal(root.ids.goal3.text)
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.25 , 'center_y':0.55}
+
+    Button:
+        id: goal4
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.1
+        on_press: root.check_the_goal(root.ids.goal4.text)
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.25 , 'center_y':0.4}
+
+    Button:
+        id: goal5
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.1
+        on_press: root.check_the_goal(root.ids.goal5.text)
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.25 , 'center_y':0.25}
+
+
+    Button:
+        id: goal6
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.1
+        background_color: 0,0,0,0
+        disabled: True
+        on_press: root.check_the_goal(root.ids.goal6.text)
+        pos_hint:{'center_x': 0.25 , 'center_y':0.1}
+
+    Button:
+        id: goal7
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.1
+        background_color: 0,0,0,0
+        disabled: True
+        on_press: root.check_the_goal(root.ids.goal7.text)
+        pos_hint:{'center_x': 0.75 , 'center_y':0.85}
+
+    Button:
+        id: goal8
+        text: ''
+        color: 0,0,0,0
+        background_color: 0,0,0,0
+        disabled: True
+        size_hint: 0.42, 0.1
+        on_press: root.check_the_goal(root.ids.goal8.text)
+        pos_hint:{'center_x': 0.75 , 'center_y':0.7}
+
+    Button:
+        id: goal9
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.1
+        background_color: 0,0,0,0
+        disabled: True
+        on_press: root.check_the_goal(root.ids.goal9.text)
+        pos_hint:{'center_x': 0.75 , 'center_y':0.55}
+
+    Button:
+        id: goal10
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.15
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.75 , 'center_y':0.4}
+        on_press: root.check_the_goal(root.ids.goal10.text)
+
+
+    Button:
+        id: goal11
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.15
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.75 , 'center_y':0.25}
+        on_press: root.check_the_goal(root.ids.goal10.text)
+
+    Button:
+        id: goal12
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.15
+        background_color: 0,0,0,0
+        disabled: True
+        pos_hint:{'center_x': 0.75 , 'center_y':0.10}
+        on_press: root.check_the_goal(root.ids.goal10.text)
+
+
+
+    Button:
+        id: goal10
+        text: ''
+        color: 0,0,0,0
+        size_hint: 0.42, 0.15
+        background_color: 0,0,0,0
+        disabled: True
+        on_press: root.check_the_goal(root.ids.goal10.text)
+
+
+
+
+
+
+<TheGoal>:
+
+    Label:
+        id: goal_description
+        text: ""
+        color : 1,0,0,1
+        pos_hint:{'center_x': 0.3 , 'center_y':0.87}
+
+    Label:
+        id: date2
+        text:''
+        color : 1,0,0,1
+        pos_hint:{'center_x': 0.3 , 'center_y':0.78}
+
+    Label:
+        id: performance_question
+        text: "how did you do today?"
+        color : 1,0,0,1
+        pos_hint:{'center_x': 0.3 , 'center_y':0.6}
+
+    TextInput
+        id: performance_value
+        multiline: False
+        pos_hint:{ 'center_x': 0.7 , 'center_y':0.6}
+        size_hint : 0.25 , 0.05
+
+
+    Button:
+        id: submit
+        pos_hint:{'center_x' : 0.7 , 'center_y': 0.5}
+        size_hint: 0.15 , 0.1
+        text: "submit"
+        on_press: root.submit_record()
+
+    Button:
+        id: next_button
+        pos_hint:{'center_x' : 0.7 , 'center_y': 0.5}
+        size_hint: 0.15 , 0.1
+        text: "Next"
+        on_press: root.manager.current = "VisualizationAndAnalyze"
+
+
+
+<VisualizationAndAnalyzePage>:
+
+    Label:
+        id: date_3
+        text: ""
+        color : 1,0,0,1
+        pos_hint : {'center_x': 0.2 , 'center_y':0.87}
+
+    Label:
+        id: goal_description2
+        text:''
+        color : 1,0,0,1
+        pos_hint:{'center_x': 0.5 ,'center_y': 0.87}
+
+
+
+    Label:
+        id: txt_1
+        text: ""
+        pos_hint: {'center_x': 0.5 , 'center_y': 0.75}
+
+    Label:
+        id: txt_2
+        text: "Keep your performance inside the box"
+        pos_hint: {'center_x': 0.5 , 'center_y': 0.7}
+
+    Label:
+        id: txt_3
+        text: "if you observe points inside the box range ...well done !!"
+        pos_hint: {'center_x': 0.5 , 'center_y': 0.65}
+
+    Label:
+        id: txt_4
+        text: "if you observe any point above the max you have exceeded your expectation ... good job!"
+        pos_hint: {'center_x': 0.6 , 'center_y': 0.6}
+
+    Label:
+        id: txt_5
+        text: "if you observe any point under the minimum you need to improve. try to cath up "
+        pos_hint: {'center_x': 0.6 , 'center_y': 0.55}
+
+    Label:
+        id: txt_6
+        text: ""
+        pos_hint: {'center_x': 0.6 , 'center_y': 0.4}
+
+    Button:
+        id: show_performance
+        pos_hint:{'center_x' : 0.2 , 'center_y': 0.25}
+        size_hint: 0.3 , 0.15
+        text: "show"
+        on_press: root.update_and_visualize_consistency()
+
+
+    Image:
+        id: performance_visualization
+        pos_hint:{'center_x': 0.7 , 'center_y': 0.25}
+        size_hint: 0.6 , 0.6
+        source:""")
+```
+
+
+
+
+```python
 
 
 
