@@ -531,7 +531,7 @@ the method go_to_my_goals() bring us to the AllGoals screen. if no goals defined
             self.arrange_all_goals()
 ```
 
-the define_goal() below is called when user hit the ok button after entering inputs of goal
+the define_goal() below is called when user hits the ok button after entering inputs of goal
 
 ```python
     def define_goal(self):
