@@ -295,14 +295,7 @@ Builder.load_string("""<ManagerPage>:
 
 
 
-    Button:
-        id: goal10
-        text: ''
-        color: 0,0,0,0
-        size_hint: 0.42, 0.15
-        background_color: 0,0,0,0
-        disabled: True
-        on_press: root.check_the_goal(root.ids.goal10.text)
+
 
 
 
